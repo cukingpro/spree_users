@@ -30,7 +30,7 @@ module Spree
 
     		def update
     			@comment = Dish::Comment.find(params[:id])
-    			if @comment.update(comment_params)
+    			if (@comment.update(comment_params) && @comment.pending)
     				@status = [ { "messages" => "Your comment was successfully updated"}]
       		else
         		@status = [ { "messages" => "Your comment was not successfully updated"}]

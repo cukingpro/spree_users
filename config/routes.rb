@@ -28,6 +28,8 @@ Spree::Core::Engine.routes.draw do
     put "update_user" => "/spree/api/users#update"
     put "confirm_email_change" => "/spree/api/users#confirm_email_change"
 
+    get "user_favorites"  => "/spree/api/likes#user_favorites"
+
     
 
     

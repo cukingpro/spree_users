@@ -7,7 +7,6 @@ Spree::Product.class_eval do
     :allow_destroy => true
   accepts_nested_attributes_for :users
 
-
   def current_user_like?(user_id)
     return false if user_id.blank?
     self.likes.pluck(:user_id).include?(user_id)

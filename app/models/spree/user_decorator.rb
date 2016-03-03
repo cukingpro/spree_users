@@ -1,11 +1,11 @@
 Spree::User.class_eval do
   has_many :likes, :class_name => "Dish::Like", foreign_key: 'user_id'
-  has_many :products, :through => :likes, :class_name => "Spree::Product"
+  has_many :like_products, :through => :likes, :class_name => "Spree::Product"
 
   accepts_nested_attributes_for :likes,
     :reject_if => :all_blank,
     :allow_destroy => true
-  accepts_nested_attributes_for :products
+  accepts_nested_attributes_for :like_products
 
   def change_password(password_params)
     if self.valid_password?(password_params[:old])
@@ -36,6 +36,10 @@ Spree::User.class_eval do
     self.change_email = nil
     self.email_change_token = nil
     save!
+  end
+
+  def favorite_list
+    Spree::Product.w
   end
 
 

@@ -28,6 +28,14 @@ module Spree
 
       end
 
+      def user_favorites
+        p current_api_user
+        p current_api_user.like_products
+        @products = current_api_user.like_products
+        render "spree/api/products/index", status: 200
+
+      end
+
       private
 
       def current_user_id
