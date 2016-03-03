@@ -3,7 +3,41 @@ Spree::User.class_eval do
   has_many :products, :through => :likes, :class_name => "Spree::Product"
 
   accepts_nested_attributes_for :likes,
-             :reject_if => :all_blank,
-             :allow_destroy => true
-        accepts_nested_attributes_for :products
+    :reject_if => :all_blank,
+    :allow_destroy => true
+  accepts_nested_attributes_for :products
+
+  def change_password(password_params)
+    if self.valid_password?(password_params[:old])
+      self.password = password_params[:new]
+      save!
+      return true
+    else
+      return false
+    end
+  end
+
+  def approved_comments
+    Dish::Comment.where(user_id: self.id, status: 1)
+  end
+
+  def update_information_with_email_change(user_information_params)
+    if (self.update(user_information_params.except(:email)) &&
+        self.update(change_email: user_information_params[:email],
+                    email_change_token: SecureRandom.urlsafe_base64.to_s))
+      return true
+    else
+      return false
+    end
+  end
+
+  def confirm_email_change
+    self.email = self.change_email
+    self.change_email = nil
+    self.email_change_token = nil
+    save!
+  end
+
+
+
 end

@@ -1,26 +1,16 @@
 class UserMailer < ApplicationMailer
 
-  # Subject can be set in your I18n file at config/locales/en.yml
-  # with the following lookup:
-  #
-  #   en.user_mailer.welcome_email,.subject
-  #
   def welcome_email(user)
     @greeting = "Hi"
 
-    mail to: user.email
+    mail to: user.email, subject: "Welcome"
   end
 
-  # Subject can be set in your I18n file at config/locales/en.yml
-  # with the following lookup:
-  #
-  #   en.user_mailer.forgot_password_email.subject
-  #
   def forgot_password_email(user)
     @user = user
-    # @url = "http://sheltered-stream-93214.herokuapp.com/#/main/reset_password?id=#{user.id}&token=#{user.reset_password_token}"
-    @url = "http://localhost:9000/#/main/reset_password"
-    mail to: user.email
+    @url = DOMAIN+"/reset_password?id=#{user.id}&token=#{user.reset_password_token}"
+
+    mail to: user.email, subject: "Forgot password"
   end
 
   def password_change_email(user)
@@ -28,5 +18,11 @@ class UserMailer < ApplicationMailer
 
     mail to: user.email
   end
-  
+
+  def email_change_confirmation_email(user)
+    @user = user
+    @confirm_email_change_url=DOMAIN+"/confirm_email_change?id=#{user.id}&token=#{user.email_change_token}"
+
+    mail to: user.change_email, subject: "Email change confirmation"
+  end
 end

@@ -1,71 +1,38 @@
 module Spree
   module Api
-class LikesController < Spree::Api::BaseController
-  
-  before_action :authenticate_user
+    class LikesController < Spree::Api::BaseController
 
-  # GET /likes
-  # def index
-  #   @likes = Like.all
-  # end
+      before_action :authenticate_user
 
-  # GET /likes/1
-  # def show
-  # end
+      def create
+        if Dish::Like.find_or_create_by(user_id: current_user_id, product_id: params[:product_id])
+          @status = [ { "messages" => "Like was successfully created"}]
 
-  # GET /likes/new
-  # def new
-  #   @like = Like.new
-  # end
+        else
+          @status = [ { "messages" => "Like was not successfully created"}]
+        end
+        render "spree/api/logger/log", status: 200
 
-  # GET /likes/1/edit
-  # def edit
-  # end
+      end
 
-  # POST /likes
-  def create
-    @like = Dish::Like.new(like_params)
+      def destroy
+        @like = Dish::Like.find_by(user_id: current_user_id, product_id: params[:product_id])
 
-    if @like.save
-      @status = [ { "messages" => "Like was successfully created"}]
-      
-    else
-      @status = [ { "messages" => "Like was not successfully created"}]
+        if @like.destroy
+          @status = [ { "messages" => "Like was successfully destroyed"}]
+
+        else
+          @status = [ { "messages" => "Like was not successfully destroyed"}]
+        end
+        render "spree/api/logger/log", status: 200
+
+      end
+
+      private
+
+      def current_user_id
+        current_api_user.id
+      end
     end
-    render "spree/api/logger/log", status: 200
   end
-
-  # PATCH/PUT /likes/1
-  # def update
-  #   if @like.update(like_params)
-  #     redirect_to @like, notice: 'Like was successfully updated.'
-  #   else
-  #     render :edit
-  #   end
-  # end
-
-  # DELETE /likes/1
-  def destroy
-    @like = Dish::Like.find_by(like_params)
-    if @like.destroy
-      @status = [ { "messages" => "Like was successfully destroyed"}]
-      
-    else
-      @status = [ { "messages" => "Like was not successfully destroyed"}]
-    end
-    render "spree/api/logger/log", status: 200
-  end
-
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    # def set_like
-    #   @like = Like.find(params[:id])
-    # end
-
-    # Only allow a trusted parameter "white list" through.
-    def like_params
-      params.require(:like).permit(:user_id, :product_id)
-    end
-end
-end
 end
