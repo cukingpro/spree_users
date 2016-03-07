@@ -1,24 +1,30 @@
 Spree::Api::UsersController.class_eval do
-#include Spree::OrdersImporter
+  #include Spree::OrdersImporter
   before_action :authenticate_user, :except => [:create, :reset_password, :reset_new_password, :forgot_password]
   def create
-    @user = Spree.user_class.new(user_params)
-    if @user.save!
-      # Mailer::UserMailer.welcome_email.deliver
-      # TestMailer.testmailer.deliver
-      
-      sign_in(@user)
-      #@order = find_cart_order_login(@user)
-      #unless @order
-      #@order = Spree::Order.new_order(user)
-      #end
-      @user.generate_spree_api_key!
-      UserMailer.welcome_email(@user).deliver
-
-      render "spree/api/users/show", status: 201
+    if Spree.user_class.exists?(email: user_params[:email])
+      @status = [ { "messages" => "An user already exists for this email address"}]
+      render "spree/api/logger/log"
     else
-      invalid_resource!(@user)
+      if @user = Spree.user_class.create(user_params)
+        sign_in(@user)
+        #@order = find_cart_order_login(@user)
+        #unless @order
+        #@order = Spree::Order.new_order(user)
+        #end
+        @user.generate_spree_api_key!
+        UserMailer.welcome_email(@user).deliver
+        render "spree/api/users/show", status: 201
+      else
+        invalid_resource!(@user)
+      end
     end
+  end
+
+  def edit
+    @user = current_api_user
+
+    render "spree/api/users/edit", status: 200
 
   end
 
@@ -29,47 +35,43 @@ Spree::Api::UsersController.class_eval do
   end
 
   def update
-    @user = Spree::User.find(params[:id])
-    authorize! :update, @user
-    p user_update_params
-
-    # @user.first_name = user_update_params[:first_name]
-    # @user.last_name = user_update_params[:last_name]
-    # @user.birth_day = user_update_params[:birth_day]
-    # @user.email = user_update_params[:email]
-
-    if @user.update(user_update_params)
-      @status = [ { "messages" => "Update Information Successful"}]
-      render "spree/api/logger/log", status: 200
-    else
-      @status = [ { "messages" => "Update Information Successful"}]
-      render "spree/api/logger/log", status: 404
-    end
-
-    # if @user.save
-    #   @status = [ { "messages" => "Update Information Successful"}]
-    #   render "spree/api/logger/log", status: 200
-    # else
-    #   @status = [ { "messages" => "Update Information Successful"}]
-    #   render "spree/api/logger/log", status: 404
-    # end
-
-  end
-
-  def change_password
+    # @user = Spree::User.find(params[:id])
     @user = current_api_user
     authorize! :update, @user
 
-    if @user.valid_password?(password_params[:old])
-      @user.password = password_params[:new]
-      @user.save
-      p @user.password
-      @status = [ { "messages" => "Update Password Successful"}]
-      render "spree/api/logger/log", status: 200
-    else
-      @status = [ { "messages" => "Password Is Not Right"}]
-      render "spree/api/logger/log", status: 404
+    if params[:password].present?
+
+      if @user.change_password(password_params)
+        @status = [ { "messages" => "Your password was successfully updated"}]
+      else
+        @status = [ { "messages" => "Your password was incorect"}]
+      end
+
+    elsif params[:user].present?
+
+      if user_information_params[:email] == @user.email
+
+        if  @user.update(user_information_params)
+          @status = [ { "messages" => "Your information was successfully updated"}]
+        else
+          @status = [ { "messages" => "Your information was not successfully updated"}]
+        end
+
+      else
+
+        if @user.update_information_with_email_change(user_information_params)
+          UserMailer.email_change_confirmation_email(@user).deliver
+          @status = [ { "messages" => "Your information was successfully updated. Please confirm your new email"}]
+        else
+          @status = [ { "messages" => "Your information was not successfully updated"}]
+        end
+
+      end
+
     end
+
+    render "spree/api/logger/log"
+
   end
 
   def forgot_password
@@ -91,7 +93,17 @@ Spree::Api::UsersController.class_eval do
     @user.save
     UserMailer.password_change_email(@user).deliver
     @status = [ { "messages" => "Reset Password Successful"}]
-    render "spree/api/logger/log", status: 200  
+    render "spree/api/logger/log", status: 200
+  end
+
+  def confirm_email_change
+    @user = Spree::User.find_by!(id: confirm_email_change_params[:id], email_change_token:  confirm_email_change_params[:token])
+    if @user.confirm_email_change
+      @status = [ { "messages" => "Your email was successfully updated"}]
+    else
+      @status = [ { "messages" => "Your email was not successfully updated"}]
+    end
+    render "spree/api/logger/log", status: 200
   end
 
   private
@@ -100,7 +112,7 @@ Spree::Api::UsersController.class_eval do
     params.require(:user).permit(:email, :password)
   end
 
-  def user_update_params
+  def user_information_params
     params.require(:user).permit(:first_name, :last_name, :birth_day, :email)
   end
 
@@ -110,6 +122,10 @@ Spree::Api::UsersController.class_eval do
 
   def reset_password_params
     params.require(:password).permit(:id, :token, :new_password)
+  end
+
+  def confirm_email_change_params
+    params.require(:confirm_email_change).permit(:id, :token)
   end
 
 end
