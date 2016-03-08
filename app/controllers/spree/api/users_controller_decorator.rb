@@ -28,13 +28,6 @@ Spree::Api::UsersController.class_eval do
 
   end
 
-  def edit
-    @user = current_api_user
-
-    render "spree/api/users/edit", status: 200
-
-  end
-
   def show
     # @user ||= Spree.user_class.accessible_by(current_ability, :read).find(params[:id])
     @user = user

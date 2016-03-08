@@ -13,6 +13,6 @@ Spree::Product.class_eval do
   end
 
   def approved_comments
-    Dish::Comment.where(product_id: self.id, status: 1)
+    Dish::Comment.where(product_id: self.id, status: 1).order(updated_at: :desc)
   end
 end
