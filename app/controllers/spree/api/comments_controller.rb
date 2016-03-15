@@ -15,7 +15,7 @@ module Spree
         elsif params[:box_id]
           Dish::Box.find(params[:box_id]).approved_comments
         end
-        render "spree/api/comments/index2", status: 200
+        render "spree/api/comments/index", status: 200
       end
 
       def create
