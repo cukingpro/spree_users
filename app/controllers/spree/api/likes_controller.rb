@@ -5,24 +5,24 @@ module Spree
       before_action :authenticate_user
 
       def create
-        if Dish::Like.find_or_create_by(user_id: current_user_id, product_id: params[:product_id])
-          @status = [ { "messages" => "Like was successfully created"}]
+        @status = if Dish::Like.find_or_create_by(comment_params)
+          [{ "messages" => "Like was successfully created" }]
 
         else
-          @status = [ { "messages" => "Like was not successfully created"}]
+          [{ "messages" => "Like was not successfully created" }]
         end
         render "spree/api/logger/log", status: 200
 
       end
 
       def destroy
-        @like = Dish::Like.find_by(user_id: current_user_id, product_id: params[:product_id])
+        @like = Dish::Like.find_by(comment_params)
 
-        if @like.destroy
-          @status = [ { "messages" => "Like was successfully destroyed"}]
+        @status = if @like.destroy
+          [{ "messages" => "Like was successfully destroyed" }]
 
         else
-          @status = [ { "messages" => "Like was not successfully destroyed"}]
+          [{ "messages" => "Like was not successfully destroyed" }]
         end
         render "spree/api/logger/log", status: 200
 
@@ -40,6 +40,10 @@ module Spree
 
       def current_user_id
         current_api_user.id
+      end
+
+      def comment_params
+        { user_id: current_user_id }.merge(product_id: params[:product_id], box_id: params[:box_id])
       end
     end
   end
