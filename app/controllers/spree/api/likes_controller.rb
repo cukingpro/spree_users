@@ -29,18 +29,15 @@ module Spree
       end
 
       def user_favorites
-        p current_api_user
-        p current_api_user.like_products
         @products = current_api_user.like_products
         render "spree/api/products/index", status: 200
-
       end
 
       private
 
-      def current_user_id
-        current_api_user.id
-      end
+      # def current_user_id
+      #   current_api_user.id
+      # end
 
       def comment_params
         { user_id: current_user_id }.merge(product_id: params[:product_id], box_id: params[:box_id])

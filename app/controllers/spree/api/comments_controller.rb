@@ -2,7 +2,7 @@ module Spree
   module Api
     class CommentsController < Spree::Api::BaseController
       before_action :authenticate_user, :except => [:index, :show]
-      before_action :current_user_id
+      # before_action :current_user_id
 
       def show
         @comment = Dish::Comment.find(params[:id])
@@ -61,9 +61,9 @@ module Spree
         params.require(:comment).permit(:title, :body, :rating)
       end
 
-      def current_user_id
-        @current_user_id = request.headers["X-Spree-Token"].present? ? current_api_user.id : nil;
-      end
+      # def current_user_id
+      #   @current_user_id = request.headers["X-Spree-Token"].present? ? current_api_user.id : nil;
+      # end
 
     end
   end

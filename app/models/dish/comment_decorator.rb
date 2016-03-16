@@ -20,8 +20,13 @@ Dish::Comment.class_eval do
 	end
 
 	def belongs_to_current_user?(user_id)
-		return false if user_id.blank?
-		return true if self.user_id == user_id
+		# return false if user_id.blank?
+		# return true if self.user_id == user_id
+		if self.user_id == user_id
+			true
+		else
+			false
+		end
 	end
 
 end
