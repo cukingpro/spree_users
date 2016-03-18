@@ -38,10 +38,5 @@ Spree::User.class_eval do
     save!
   end
 
-  def favorite_list
-    Spree::Product.w
-  end
-
-
 
 end
