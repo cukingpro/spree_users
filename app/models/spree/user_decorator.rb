@@ -1,6 +1,7 @@
 Spree::User.class_eval do
   has_many :likes, :class_name => "Dish::Like", foreign_key: 'user_id'
   has_many :like_products, :through => :likes, :class_name => "Spree::Product"
+  has_many :surveys, :class_name => "Survey::Survey", foreign_key: 'user_id'
 
   accepts_nested_attributes_for :likes,
     :reject_if => :all_blank,
