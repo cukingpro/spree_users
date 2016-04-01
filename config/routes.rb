@@ -32,7 +32,7 @@ Spree::Core::Engine.routes.draw do
 
     resources :surveys, only: [:create]
     post "surveys/check" => "/spree/api/surveys#check"
-    
+    get "surveys" => "/spree/api/surveys#user_survey"
 
     
   end

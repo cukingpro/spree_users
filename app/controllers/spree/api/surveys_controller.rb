@@ -14,11 +14,16 @@ module Spree
 
       def check
         @status = if Survey::Survey.exists?(user_id: current_user_id)
-          [{ "messages" => "User survey already exists" }]
+          [{ "messages" => "true" }] #User survey already exists
         else
-          [{ "messages" => "User survey available" }]
+          [{ "messages" => "false" }] #User survey available
         end
         render "spree/api/logger/log"
+      end
+
+      def user_survey
+        @survey = Survey::Survey.find_by(user_id: current_user_id)
+        render "spree/api/surveys/show"
       end
 
       private
