@@ -30,10 +30,10 @@ Spree::Core::Engine.routes.draw do
 
     get "user_favorites"  => "/spree/api/likes#user_favorites"
 
-    resources :surveys, only: [:create]
+    resources :surveys, only: [:create, :update]
     post "surveys/check" => "/spree/api/surveys#check"
     get "surveys" => "/spree/api/surveys#user_survey"
 
-    
+    post "orders/:id/cancel" => "/spree/api/orders#cancell"
   end
 end

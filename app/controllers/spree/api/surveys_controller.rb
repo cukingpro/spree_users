@@ -26,6 +26,16 @@ module Spree
         render "spree/api/surveys/show"
       end
 
+      def update
+        @survey = Survey::Survey.find_by(user_id: current_user_id)
+        @status = if @survey.update(survey_params)
+          [{ "messages" => "Your survey was successfully updated" }]
+        else
+          [{ "messages" => "Your survey was not successfully updated" }]
+        end
+        render "spree/api/logger/log"
+      end
+
       private
 
       def survey_params
