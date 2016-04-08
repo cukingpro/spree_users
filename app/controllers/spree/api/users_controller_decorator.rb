@@ -8,10 +8,6 @@ Spree::Api::UsersController.class_eval do
     else
       if @user = Spree.user_class.create(user_params)
         sign_in(@user)
-        #@order = find_cart_order_login(@user)
-        #unless @order
-        #@order = Spree::Order.new_order(user)
-        #end
         @user.generate_spree_api_key!
         UserMailer.welcome_email(@user).deliver
         render "spree/api/users/show", status: 201
@@ -29,13 +25,11 @@ Spree::Api::UsersController.class_eval do
   end
 
   def show
-    # @user ||= Spree.user_class.accessible_by(current_ability, :read).find(params[:id])
     @user = user
-    render  "spree/api/users/show_detail", status: 200
+    render  "spree/api/users/show", status: 200
   end
 
   def update
-    # @user = Spree::User.find(params[:id])
     @user = current_api_user
     authorize! :update, @user
 
@@ -104,6 +98,11 @@ Spree::Api::UsersController.class_eval do
       @status = [ { "messages" => "Your email was not successfully updated"}]
     end
     render "spree/api/logger/log", status: 200
+  end
+
+  def user_info 
+    @user = current_api_user
+    render  "spree/api/users/show", status: 200
   end
 
   private

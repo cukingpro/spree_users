@@ -13,6 +13,7 @@ Spree::Core::Engine.routes.draw do
     resources :comments
 
     resources :users 
+    get '/user_info' => "/spree/api/users#user_info"
 
   	post "/login" => "/spree/api/log_user#login"
   	post "/logout" => "/spree/api/log_user#logout"
