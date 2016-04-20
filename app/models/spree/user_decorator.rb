@@ -39,5 +39,9 @@ Spree::User.class_eval do
     save!
   end
 
+  def add_fund(amount)
+    self.balance += amount
+  end
+
 
 end
