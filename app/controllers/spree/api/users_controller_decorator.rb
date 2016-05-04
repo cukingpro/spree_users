@@ -4,7 +4,7 @@ Spree::Api::UsersController.class_eval do
   def create
     if Spree.user_class.exists?(email: user_params[:email])
       @status = [ { "messages" => "An user already exists for this email address"}]
-      render "spree/api/logger/log"
+      render "spree/api/logger/log", status: 409
     else
       if @user = Spree.user_class.create(user_params)
         sign_in(@user)
@@ -77,7 +77,6 @@ Spree::Api::UsersController.class_eval do
     UserMailer.forgot_password_email(@user).deliver
     @status = [{"messages" => "Request Successful"}]
     render "spree/api/logger/log" , status: 200
-
   end
 
   def reset_password
