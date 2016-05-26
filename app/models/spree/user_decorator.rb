@@ -40,7 +40,7 @@ Spree::User.class_eval do
   end
 
   def add_fund(amount)
-    self.balance += amount
+    self.balance += amount*1.1
   end
 
 

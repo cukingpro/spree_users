@@ -4,17 +4,9 @@ module Spree
       before_action :authenticate_user, :except => [:login]
       def login
         @user = Spree.user_class.find_for_database_authentication(:email => params[:email])
-        p @user
         if  @user && @user.valid_password?(params[:password])
           sign_in(@user)
-
-          # @order = find_cart_order_login(@user)
-          # unless @order
-          #   @order = Spree::Order.new_order(@user)
-          # end
-
           @user.generate_spree_api_key!
-
           render "spree/api/users/show", status: 200
         else
           @status = [{ "messages" => "Your Email or Password is wrong"}]
@@ -27,9 +19,6 @@ module Spree
         if @user
           sign_out(@user)
           @user.generate_spree_api_key!
-          # respond_to do |format|
-          # 	format.json { render :json => { "message " =>  "Logout Successful" }}
-          # end
           @status = [ { "messages" => "Logout successful"}]
           render "spree/api/logger/log", status: 200
         else
