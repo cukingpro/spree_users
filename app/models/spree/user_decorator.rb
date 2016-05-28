@@ -43,5 +43,9 @@ Spree::User.class_eval do
     self.balance += amount*1.1
   end
 
+  def set_role(role)
+    self.spree_roles = Spree::Role.where(id: role)
+  end
+
 
 end

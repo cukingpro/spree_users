@@ -35,10 +35,6 @@ module Spree
 
       private
 
-      # def current_user_id
-      #   current_api_user.id
-      # end
-
       def comment_params
         { user_id: current_user_id }.merge(product_id: params[:product_id], box_id: params[:box_id])
       end

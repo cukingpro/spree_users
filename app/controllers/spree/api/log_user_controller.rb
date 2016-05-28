@@ -1,10 +1,23 @@
 module Spree
   module Api
     class LogUserController < Spree::Api::BaseController
-      before_action :authenticate_user, :except => [:login]
+      before_action :authenticate_user, :except => [:login, :deliverer_login]
+
       def login
         @user = Spree.user_class.find_for_database_authentication(:email => params[:email])
         if  @user && @user.valid_password?(params[:password])
+          sign_in(@user)
+          @user.generate_spree_api_key!
+          render "spree/api/users/show", status: 200
+        else
+          @status = [{ "messages" => "Your Email or Password is wrong"}]
+          render "spree/api/logger/log", status: 404
+        end
+      end
+
+      def deliverer_login
+        @user = Spree.user_class.find_for_database_authentication(:email => params[:email])
+        if  @user && @user.valid_password?(params[:password]) && @user.has_spree_role?('deliverer')
           sign_in(@user)
           @user.generate_spree_api_key!
           render "spree/api/users/show", status: 200

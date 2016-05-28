@@ -1,6 +1,7 @@
 Spree::Api::UsersController.class_eval do
-  #include Spree::OrdersImporter
+
   before_action :authenticate_user, :except => [:create, :reset_password, :reset_new_password, :forgot_password]
+  
   def create
     if Spree.user_class.exists?(email: user_params[:email])
       @status = [ { "messages" => "An user already exists for this email address"}]
@@ -9,6 +10,7 @@ Spree::Api::UsersController.class_eval do
       if @user = Spree.user_class.create(user_params)
         sign_in(@user)
         @user.generate_spree_api_key!
+        @user.set_role(2)
         UserMailer.welcome_email(@user).deliver
         render "spree/api/users/show", status: 201
       else

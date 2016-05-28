@@ -16,6 +16,7 @@ Spree::Core::Engine.routes.draw do
     get '/user_info' => "/spree/api/users#user_info"
 
   	post "/login" => "/spree/api/log_user#login"
+    post "/deliverer_login" => "/spree/api/log_user#deliverer_login"
   	post "/logout" => "/spree/api/log_user#logout"
   	put "/users/:id/change_password" => "/spree/api/users#change_password"
   	post "/check" => "/spree/api/log_user#check"
