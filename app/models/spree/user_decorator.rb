@@ -2,11 +2,18 @@ Spree::User.class_eval do
   has_many :likes, :class_name => "Dish::Like", foreign_key: 'user_id'
   has_many :like_products, :through => :likes, :class_name => "Spree::Product"
   has_many :surveys, :class_name => "Survey::Survey", foreign_key: 'user_id'
+  has_many :shipments, :class_name => "Spree::Shipment", foreign_key: 'user_id'
+
+  scope :deliverers, -> { Spree::User.all.to_a.select{ |u| u.has_spree_role?('deliverer') } }
 
   accepts_nested_attributes_for :likes,
     :reject_if => :all_blank,
     :allow_destroy => true
   accepts_nested_attributes_for :like_products
+
+  accepts_nested_attributes_for :shipments,
+    :reject_if => :all_blank,
+    :allow_destroy => true
 
   def change_password(password_params)
     if self.valid_password?(password_params[:old])
@@ -47,5 +54,5 @@ Spree::User.class_eval do
     self.spree_roles = Spree::Role.where(id: role)
   end
 
-
+  
 end

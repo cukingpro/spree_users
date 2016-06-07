@@ -5,7 +5,7 @@ module Spree
 
       def login
         @user = Spree.user_class.find_for_database_authentication(:email => params[:email])
-        if  @user && @user.valid_password?(params[:password])
+        if  @user && @user.valid_password?(params[:password]) && @user.has_spree_role?('user')
           sign_in(@user)
           @user.generate_spree_api_key!
           render "spree/api/users/show", status: 200

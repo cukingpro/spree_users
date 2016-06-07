@@ -37,5 +37,9 @@ Spree::Core::Engine.routes.draw do
     get "surveys" => "/spree/api/surveys#user_survey"
 
     post "orders/:id/cancel" => "/spree/api/orders#cancell"
+
+    # deliverer
+    get "deliverer_shipments" => "/spree/api/shipments#deliverer_shipments"
+    
   end
 end
